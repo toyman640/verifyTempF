@@ -1,11 +1,18 @@
-import React from "react";
-import { Button } from "react-bootstrap/Button";
-import { Form } from "react-bootstrap/Form";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import  Form  from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const moveToSignUp = () => {
+    navigate('/new-user');
+  };
 
   return (
-    <div>
+    <div className='col-4 offset-4 mt-5 pt-5'>
+
       <Form>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -26,6 +33,8 @@ const Login = () => {
           Submit
         </Button>
       </Form>
+      <p>New User?<Button variant="link" onClick={moveToSignUp}>SignUp here</Button></p>
+      
     </div>
   )
 };
