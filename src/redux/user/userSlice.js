@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { build } from "vite";
 
-const createUser = 'http://127.0.0.1:3000/users/registrations'
+const createUser = 'http://127.0.0.1:3000/signup'
 
 const initialState = {
   loading: false,
