@@ -31,21 +31,31 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (build) => {
     build
-      .addCase(signUpUser.pending, (state) => ({
-        ...state,
-        loading: true,
-        error: null,
-      }))
-      .addCase(signUpUser.fulfilled, (state, action) => ({
-        ...state,
-        loading: false,
-        createUser: action.payload,
-        error: null,
-      }))
-      .addCase(signUpUser.rejected, (state, action) => ({
-        ...state,
-        error: action.payload,
-      }));
+      .addCase(signUpUser.pending, (state) => {
+        console.log('Pending action triggered');
+        return {
+          ...state,
+          loading: true,
+          error: null,
+        }
+      })
+      .addCase(signUpUser.fulfilled, (state, action) => {
+        console.log('Fulfilled action triggered:', action.payload);
+        return {
+          ...state,
+          loading: false,
+          createUser: action.payload,
+          error: null,
+        };
+      })
+      .addCase(signUpUser.rejected, (state, action) => {
+        console.log('Rejected action triggered:', action.payload);
+        return {
+          ...state,
+          loading: false,
+          error: action.payload?.data?.status?.message || 'An error occurred',
+        };
+      });
   }
 });
 
