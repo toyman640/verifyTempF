@@ -7,6 +7,7 @@ const initialState = {
   loading: false,
   user: null,
   isAuthenticated: false,
+  createUser: null,
   error: null,
 }
 
@@ -19,6 +20,7 @@ export const signUpUser = createAsyncThunk('user/signUpUser',
     const response = await axios.post(createUser, formData, {
       headers,
     });
+    console.log(response);
     return response.data;
   }
 );
@@ -37,8 +39,7 @@ const userSlice = createSlice({
       .addCase(signUpUser.fulfilled, (state, action) => ({
         ...state,
         loading: false,
-        user: action.payload,
-        isAuthenticated: true,
+        createUser: action.payload,
         error: null,
       }))
       .addCase(signUpUser.rejected, (state, action) => ({
