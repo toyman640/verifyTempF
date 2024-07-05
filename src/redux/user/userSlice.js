@@ -25,14 +25,6 @@ export const signUpUser = createAsyncThunk('user/signUpUser',
       console.log(err.response.status)
       return thunkApi.rejectWithValue(err.response.status);
     }
-    // const headers = {
-    //   'Content-Type': 'application/json',
-    // };
-
-    // const response = await axios.post(createUser, formData, {
-    //   headers,
-    // });
-    // return response.data;
 
   }
 );
