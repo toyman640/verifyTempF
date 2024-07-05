@@ -11,7 +11,7 @@ import { signUpUser } from "../redux/user/userSlice";
 const SignUp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error, createUser } = useSelector(state => state.user);
+  const { loading, registerError, createUser } = useSelector(state => state.user);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -53,23 +53,25 @@ const SignUp = () => {
     if (createUser) {
       if (createUser.status && createUser.status.code === 200) {
         setSuccessMessage('Registration successful! Please log in.');
+        setRegistrationError('This email already exists.');
         setFirstName('');
         setLastName('');
         setEmail('');
         setPassword('');
         setPasswordError('');
         setRegistrationError('');
-      } else if (createUser.status && createUser.status.code === 422) {
-        setRegistrationError(createUser.status.message);
-        setPasswordError('');
-        setSuccessMessage('');
       } else {
-        setRegistrationError('Registration failed. Please try again.');
+        setRegistrationError('This email already exists.');
         setPasswordError('');
         setSuccessMessage('');
       }
+    } else if (registerError) {
+      console.log(registerError);
+      setRegistrationError('Registration failed. Please try again.');
+      setPasswordError('');
+      setSuccessMessage('');
     }
-  }, [createUser]);
+  }, [createUser, registerError]);
 
 
   return (

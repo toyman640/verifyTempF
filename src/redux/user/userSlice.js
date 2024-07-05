@@ -8,20 +8,32 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   createUser: null,
-  error: null,
+  registerError: null,
 }
 
 export const signUpUser = createAsyncThunk('user/signUpUser', 
-  async (formData) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+  async (formData, thunkApi) => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const response = await axios.post(createUser, formData, {
+        headers,
+      });
+      return response.data;
+    } catch (err) {
+      console.log(err.response.status)
+      return thunkApi.rejectWithValue(err.response.status);
+    }
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    // };
 
-    const response = await axios.post(createUser, formData, {
-      headers,
-    });
-    console.log(response);
-    return response.data;
+    // const response = await axios.post(createUser, formData, {
+    //   headers,
+    // });
+    // return response.data;
+
   }
 );
 
@@ -31,30 +43,25 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (build) => {
     build
-      .addCase(signUpUser.pending, (state) => {
-        console.log('Pending action triggered');
-        return {
-          ...state,
-          loading: true,
-          error: null,
-        }
-      })
-      .addCase(signUpUser.fulfilled, (state, action) => {
-        console.log('Fulfilled action triggered:', action.payload);
-        return {
-          ...state,
-          loading: false,
-          createUser: action.payload,
-          error: null,
-        };
-      })
+      .addCase(signUpUser.pending, (state) => ({
+        ...state,
+        loading: true,
+        error: null,
+      }))
+      .addCase(signUpUser.fulfilled, (state, action) => ({
+        ...state,
+        loading: false,
+        createUser: action.payload,
+        error: null,
+      }))
       .addCase(signUpUser.rejected, (state, action) => {
-        console.log('Rejected action triggered:', action.payload);
+        console.log(action)
         return {
+
           ...state,
-          loading: false,
-          error: action.payload?.data?.status?.message || 'An error occurred',
-        };
+          registerError: action.payload,
+        }
+        
       });
   }
 });
