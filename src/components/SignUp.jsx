@@ -65,9 +65,13 @@ const SignUp = () => {
         setPasswordError('');
         setSuccessMessage('');
       }
-    } else if (registerError) {
+    } else if (registerError === 422) {
       console.log(registerError);
-      setRegistrationError('Registration failed. Please try again.');
+      setRegistrationError('This email already exists!');
+      setPasswordError('');
+      setSuccessMessage('');
+    } else if (registerError) {
+      setRegistrationError('Registration not successful');
       setPasswordError('');
       setSuccessMessage('');
     }
