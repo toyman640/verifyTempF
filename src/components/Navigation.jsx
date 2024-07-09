@@ -1,16 +1,24 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { selectUser, logUserOut } from "../redux/user/userSlice";
 
 const Navigation = () => {
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const user = useSelector((state) => state.reducer)
+  const user = useSelector(selectUser)
+
+  const exitUser = () => {
+    dispatch(logUserOut());
+  };
+
+
   return (
     <div>
       <Navbar bg="dark" data-bs-theme="dark">
@@ -31,7 +39,7 @@ const Navigation = () => {
                   <Button variant="secondary" onClick={handleClose}>
                     No
                   </Button>
-                  <Button variant="danger" onClick={handleClose}>
+                  <Button variant="danger" onClick={exitUser}>
                     Yes
                   </Button>
                 </Modal.Footer>

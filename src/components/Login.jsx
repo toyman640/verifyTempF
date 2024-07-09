@@ -4,11 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import  Form  from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { logInUser } from '../redux/user/userSlice';
+import { selectLoading, selectLoginError, selectUser, selectIsAuthenticated } from '../redux/user/userSlice';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, loginError, user, isAuthenticated } = useSelector(state => state);
+  // const { loading, loginError, user, isAuthenticated } = useSelector(state => state);
+  const loading = useSelector(selectLoading);
+  const loginError = useSelector(selectLoginError);
+  const user = useSelector(selectUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');

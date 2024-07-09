@@ -3,10 +3,12 @@ import axios from "axios";
 
 const createUser = 'http://127.0.0.1:3000/signup'
 const userAuth = 'http://127.0.0.1:3000/login'
+const logoutUser = 'http://127.0.0.1:3000/logout'
 
 const initialState = {
   loading: false,
   user: null,
+  token: null,
   isAuthenticated: false,
   createUser: null,
   registerError: null,
@@ -40,7 +42,10 @@ export const logInUser = createAsyncThunk('user/logInUser',
       const response = await axios.post(userAuth, loginData, {
         headers,
       });
-      return response.data;
+      const userData = response.data;
+      const auth = response.headers.authorization;
+      // console.log(response.headers.authorization)
+      return { userData, auth };
     } catch (err) {
       console.log(err.response.status)
       return thunkApi.rejectWithValue(err.response.status);
@@ -48,6 +53,28 @@ export const logInUser = createAsyncThunk('user/logInUser',
   }
 );
 
+export const logUserOut = createAsyncThunk('user/logUserOut',
+  async (_, thunkApi) => {
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+    }
+    // const response = await axios.delete(logoutUser, {
+    //   headers,
+    // });
+    // return response.data;
+    try {
+      const response = await axios.delete(logoutUser, {
+        headers,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error; // Propagate the error back to the component
+    }
+  }
+)
+
+localStorage.clear();
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -77,8 +104,9 @@ const userSlice = createSlice({
       }))
       .addCase(logInUser.fulfilled, (state, action) => ({
         ...state,
-        user: action.payload,
+        user: action.payload.userData,
         isAuthenticated: true,
+        token: action.payload.auth,
         error:null,
       }))
       .addCase(logInUser.rejected, (state, action) => {
@@ -93,5 +121,10 @@ const userSlice = createSlice({
       })
   }
 });
+
+export const selectLoading = (state) => state.loading;
+export const selectLoginError = (state) => state.loginError;
+export const selectUser = (state) => state.user;
+export const selectIsAuthenticated = (state) => state.isAuthenticated;
 
 export default userSlice.reducer;
