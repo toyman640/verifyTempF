@@ -8,7 +8,7 @@ import { logInUser } from '../redux/user/userSlice';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, loginError, user, isAuthenticated } = useSelector(state => state.user);
+  const { loading, loginError, user, isAuthenticated } = useSelector(state => state);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -37,12 +37,21 @@ const Login = () => {
     if (user) {
       if (user.status.code === 200) {
         setSuccessMessage('Log in successful');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 4000);
         navigate('/dashboard');
       }
     } else if (loginError === 401) {
       setBadLoginMessage('Invalid Email or Password. Try Again')
-    } else if (loginError) {
+      setTimeout(() => {
+        setBadLoginMessage('');
+      }, 4000);
+    } else if (loginError === 500 || loginError === undefined) {
       setBadLoginMessage('Invalid Login. Contact Admin')
+      setTimeout(() => {
+        setBadLoginMessage('');
+      }, 4000);
     }
   }, [user, loginError])
 

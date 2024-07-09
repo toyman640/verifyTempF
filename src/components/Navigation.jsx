@@ -10,7 +10,7 @@ const Navigation = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const user = useSelector((state) => state.user.user)
+  const user = useSelector((state) => state.reducer)
   return (
     <div>
       <Navbar bg="dark" data-bs-theme="dark">
