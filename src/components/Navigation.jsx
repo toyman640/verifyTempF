@@ -36,7 +36,7 @@ const Navigation = () => {
           <Navbar.Brand href="#home">LOGO</Navbar.Brand>
           {user ? (
             <Navbar.Text>
-              {user.status.data.user.firstname} {user.status.data.user.lastname}
+              {user.firstname} {user.lastname}
               <Button variant="danger" onClick={handleShow}>
                 Logout
               </Button>

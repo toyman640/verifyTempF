@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import  Form  from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { logInUser } from '../redux/user/userSlice';
-import { selectLoading, selectLoginError, selectUser, selectIsAuthenticated } from '../redux/user/userSlice';
+import { selectLoading, selectLoginError, selectUser, selectIsAuthenticated, selectToken } from '../redux/user/userSlice';
+import { getCurrentUser } from '../redux/user/userSlice';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Login = () => {
   const loading = useSelector(selectLoading);
   const loginError = useSelector(selectLoginError);
   const user = useSelector(selectUser);
+  const userToken = useSelector(selectToken)
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,18 +37,20 @@ const Login = () => {
         password: password,
       }
     }
-    dispatch(logInUser(userAuth));
+    dispatch(logInUser(userAuth)).then((response) => {
+      if (response.meta.requestStatus === 'fulfilled') {
+        dispatch(getCurrentUser());
+      }
+    });
   };
 
   useEffect( () => {
-    if (user) {
-      if (user.status.code === 200) {
-        setSuccessMessage('Log in successful');
-        setTimeout(() => {
-          setSuccessMessage('');
-        }, 4000);
-        navigate('/dashboard');
-      }
+    if (userToken != null) {
+      setSuccessMessage('Log in successful');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 4000);
+      navigate('/dashboard');
     } else if (loginError === 401) {
       setBadLoginMessage('Invalid Email or Password. Try Again')
       setTimeout(() => {

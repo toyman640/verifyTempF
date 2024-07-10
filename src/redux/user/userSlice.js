@@ -15,6 +15,7 @@ const initialState = {
   registerError: null,
   loginError: null,
   logOutError: null,
+  currentUserError: null,
 }
 
 export const signUpUser = createAsyncThunk('user/signUpUser', 
@@ -44,9 +45,8 @@ export const logInUser = createAsyncThunk('user/logInUser',
       const response = await axios.post(userAuth, loginData, {
         headers,
       });
-      const userData = response.data;
       const auth = response.headers.authorization;
-      return { userData, auth };
+      return auth;
     } catch (err) {
       console.log(err.response.status)
       return thunkApi.rejectWithValue(err.response.status);
@@ -56,8 +56,10 @@ export const logInUser = createAsyncThunk('user/logInUser',
 
 export const getCurrentUser = createAsyncThunk('user/getCurrentUser',
   async (_, thunkApi) => {
+    const state = thunkApi.getState();
+    const token = state.token;
     const headers = {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': token,
     }
     try {
       const response = await axios.get(currentUserURL, {headers});
@@ -124,23 +126,40 @@ const userSlice = createSlice({
         loading: true,
         error: null,
       }))
-      .addCase(logInUser.fulfilled, (state, action) => ({
-        ...state,
-        user: action.payload.userData,
-        isAuthenticated: true,
-        token: action.payload.auth,
-        error:null,
-      }))
+      .addCase(logInUser.fulfilled, (state, action) => {
+        const auth = action.payload;
+        return {
+          ...state,
+          isAuthenticated: true,
+          token: auth,
+          error: null,
+        };
+      })
       .addCase(logInUser.rejected, (state, action) => {
         console.log("Log in error", action.payload)
         return {
-
           ...state,
           loading: false,
           isAuthenticated: false,
           loginError: action.payload,
         }
       })
+      .addCase(getCurrentUser.pending, (state, action) => ({
+        ...state,
+        loading: true,
+        currentUserError: null,
+      }))
+      .addCase(getCurrentUser.fulfilled, (state, action) => ({
+        ...state,
+        isAuthenticated: true,
+        user: action.payload,
+        currentUserError: null,
+      }))
+      .addCase(getCurrentUser.rejected, (state, action) => ({
+        ...state,
+        isAuthenticated: false,
+        currentUserError:action.payload
+      }))
       .addCase(logUserOut.pending, (state) => ({
         ...state,
         loading: true,
@@ -168,6 +187,7 @@ export const { resetState } = userSlice.actions;
 export const selectLoading = (state) => state.loading;
 export const selectLoginError = (state) => state.loginError;
 export const selectUser = (state) => state.user;
+export const selectToken = (state) => state.token;
 export const selectIsAuthenticated = (state) => state.isAuthenticated;
 
 export default userSlice.reducer;
