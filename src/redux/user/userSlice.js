@@ -66,7 +66,7 @@ export const getCurrentUser = createAsyncThunk('user/getCurrentUser',
       return response.data;
     } catch (err) {
       console.error('Logout failed:', err);
-      throw err; // Propagate the error back to the component
+      throw err;
     }
 
   }
@@ -76,14 +76,9 @@ export const logUserOut = createAsyncThunk('user/logUserOut',
   async (_, thunkApi) => {
     const state = thunkApi.getState();
     const token = state.token;
-    console.log('Token before passing to headers:', token);
     const headers = {
       'Authorization': token,
     }
-    // const response = await axios.delete(logoutUser, {
-    //   headers,
-    // });
-    // return response.data;
     try {
       const response = await axios.delete(logoutUser, {
         headers,
@@ -91,7 +86,7 @@ export const logUserOut = createAsyncThunk('user/logUserOut',
       return response.data;
     } catch (error) {
       console.error('Logout failed:', error);
-      throw error; // Propagate the error back to the component
+      throw error;
     }
   }
 )
