@@ -7,7 +7,7 @@ import { persistReducer, persistStore } from "redux-persist";
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['loading', 'registerError', 'loginError']
+  blacklist: ['loading', 'registerError', 'loginError', 'logOutError']
 }
 
 const persistedReducer = persistReducer(persistConfig, userReducer)

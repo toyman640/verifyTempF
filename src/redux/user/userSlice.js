@@ -4,6 +4,7 @@ import axios from "axios";
 const createUser = 'http://127.0.0.1:3000/signup'
 const userAuth = 'http://127.0.0.1:3000/login'
 const logoutUser = 'http://127.0.0.1:3000/logout'
+const currentUserURL = 'http://127.0.0.1:3000/current_user'
 
 const initialState = {
   loading: false,
@@ -12,7 +13,8 @@ const initialState = {
   isAuthenticated: false,
   createUser: null,
   registerError: null,
-  loginError: null
+  loginError: null,
+  logOutError: null,
 }
 
 export const signUpUser = createAsyncThunk('user/signUpUser', 
@@ -44,7 +46,6 @@ export const logInUser = createAsyncThunk('user/logInUser',
       });
       const userData = response.data;
       const auth = response.headers.authorization;
-      // console.log(response.headers.authorization)
       return { userData, auth };
     } catch (err) {
       console.log(err.response.status)
@@ -53,10 +54,29 @@ export const logInUser = createAsyncThunk('user/logInUser',
   }
 );
 
-export const logUserOut = createAsyncThunk('user/logUserOut',
+export const getCurrentUser = createAsyncThunk('user/getCurrentUser',
   async (_, thunkApi) => {
     const headers = {
       'Authorization': `Bearer ${token}`,
+    }
+    try {
+      const response = await axios.get(currentUserURL, {headers});
+      return response.data;
+    } catch (err) {
+      console.error('Logout failed:', err);
+      throw err; // Propagate the error back to the component
+    }
+
+  }
+)
+
+export const logUserOut = createAsyncThunk('user/logUserOut',
+  async (_, thunkApi) => {
+    const state = thunkApi.getState();
+    const token = state.token;
+    console.log('Token before passing to headers:', token);
+    const headers = {
+      'Authorization': token,
     }
     // const response = await axios.delete(logoutUser, {
     //   headers,
@@ -74,11 +94,13 @@ export const logUserOut = createAsyncThunk('user/logUserOut',
   }
 )
 
-localStorage.clear();
+// localStorage.clear();
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: () => initialState
+  },
   extraReducers: (build) => {
     build
       .addCase(signUpUser.pending, (state) => ({
@@ -119,8 +141,29 @@ const userSlice = createSlice({
           loginError: action.payload,
         }
       })
+      .addCase(logUserOut.pending, (state) => ({
+        ...state,
+        loading: true,
+
+      }))
+      .addCase(logUserOut.fulfilled, (state, action) => ({
+        ...state,
+        loading: true,
+        isAuthenticated: false,
+        logOutError: null,
+
+      }))
+      .addCase(logUserOut.rejected, (state, action) => ({
+        ...state,
+        loading: false,
+        isAuthenticated: false,
+        logOutError: action.payload,
+
+      }))
   }
 });
+
+export const { resetState } = userSlice.actions;
 
 export const selectLoading = (state) => state.loading;
 export const selectLoginError = (state) => state.loginError;

@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { selectUser, logUserOut } from "../redux/user/userSlice";
+import { selectUser, logUserOut, resetState } from "../redux/user/userSlice";
 
 const Navigation = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const user = useSelector(selectUser)
 
   const exitUser = () => {
-    dispatch(logUserOut());
+    dispatch(logUserOut())
+    .then(() => {
+      dispatch(resetState()); // Reset state after logging out
+      navigate('/')
+      // Optionally, navigate to the login page or perform other actions
+    })
+    .catch((error) => {
+      console.error('Logout error:', error);
+    });
   };
 
 
